@@ -1,4 +1,4 @@
-# AcademyBugs.com
+# Academy Bugs
 
 Тренируем навыки:
 
