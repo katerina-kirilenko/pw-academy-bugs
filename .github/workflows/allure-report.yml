@@ -11,28 +11,31 @@ on:
 
 jobs:
   e2e:
-    timeout-minutes: 30
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       # 1. Checkout кода из репозитория
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       # 2. Настройка Node.js
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      # 3. Установка Playwright
-      - name: Install PW + dependencies
+      # 3. Установка зависимостей
+      - name: Install dependencies
+        run: npm install
+      # 4. Установка Playwright
+      - name: Install Playwright
         run: npx playwright install --with-deps
-      # 4. Запуск тестов Playwright
+      # 5. Запуск тестов Playwright
       - name: Run Playwright tests
-        run: npx run test
+        run: npx playwright test
 
   build_gpt:
     runs-on: ubuntu-latest
     steps:
       # 1. Checkout кода из репозитория
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # 2. Клонирование ветки gh-pages для получения истории (если существует)
       - name: Retrieve previous Allure history
@@ -47,23 +50,27 @@ jobs:
 
       # 3. Настройка Node.js
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'   # Или другую актуальную версию
+          node-version: '22'
 
       # 4. Установка зависимостей
       - name: Install dependencies
         run: npm install
 
-      # 5. Запуск тестов Playwright
+      # 5. Установка Playwright
+      - name: Install Playwright
+        run: npx playwright install
+
+      # 6. Запуск тестов Playwright
       - name: Run Playwright tests
         run: npx playwright test
 
-      # 6. Генерация Allure отчёта, включая историю
+      # 7. Генерация Allure отчёта, включая историю
       - name: Generate Allure Report
         run: npx allure generate allure-results --clean -o allure-report
 
-      # 7. Публикация отчёта на GitHub Pages
+      # 8. Публикация отчёта на GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
