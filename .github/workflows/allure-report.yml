@@ -1,0 +1,71 @@
+name: Allure Report
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches:
+      - master
+  # ручной запуск
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout кода из репозитория
+      - uses: actions/checkout@v2
+      # 2. Настройка Node.js
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+      # 3. Установка Playwright
+      - name: Install PW + dependencies
+        run: npx playwright install --with-deps
+      # 4. Запуск тестов Playwright
+      - name: Run Playwright tests
+        run: npx run test
+
+  build_gpt:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout кода из репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # 2. Клонирование ветки gh-pages для получения истории (если существует)
+      - name: Retrieve previous Allure history
+        run: |
+          git clone --branch gh-pages https://github.com/${{ github.repository }} gh-pages || echo "gh-pages branch not found"
+          if [ -d gh-pages/history ]; then
+              echo "Copying history folder..."
+              cp -R gh-pages/history ./allure-results/
+          else
+              echo "No history folder found."
+          fi
+
+      # 3. Настройка Node.js
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'   # Или другую актуальную версию
+
+      # 4. Установка зависимостей
+      - name: Install dependencies
+        run: npm install
+
+      # 5. Запуск тестов Playwright
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      # 6. Генерация Allure отчёта, включая историю
+      - name: Generate Allure Report
+        run: npx allure generate allure-results --clean -o allure-report
+
+      # 7. Публикация отчёта на GitHub Pages
+      - name: Deploy Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
