@@ -2,7 +2,8 @@ name: Allure Report
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
   pull_request:
     branches:
       - master
@@ -16,21 +17,70 @@ jobs:
     steps:
       # 1. Checkout кода из репозитория
       - uses: actions/checkout@v4
+
       # 2. Настройка Node.js
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
       # 3. Установка зависимостей
       - name: Install dependencies
         run: npm install
+
       # 4. Установка Playwright
       - name: Install Playwright
         run: npx playwright install --with-deps
+
       # 5. Запуск тестов Playwright
       - name: Run Playwright tests
         run: npx playwright test
 
-  build_gpt:
+      # 6. Сохранение отчетов Playwright
+      - uses: actions/upload-artifact@v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: test-results
+          path: test-results
+          retention-days: 20
+
+      # 7. Сохранение отчетов Allure
+      - uses: actions/upload-artifact@v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 20
+
+      # 8. Забрать результаты предыдущего запуска
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      # 9. Генерация Allure отчёта
+      - uses: simple-elf/allure-report-action@master
+        if: always()
+        id: allure-report
+        with:
+          allure_results: allure-results
+          gh_pages: gh-pages
+          allure_report: allure-report
+          keep_reports: 20
+      # 10. Deploy отчёта
+      - name: Deploy report
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+  build:
     runs-on: ubuntu-latest
     steps:
       # 1. Checkout кода из репозитория
@@ -52,7 +102,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: lts/*
 
       # 4. Установка зависимостей
       - name: Install dependencies
@@ -72,7 +122,7 @@ jobs:
 
       # 8. Публикация отчёта на GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
+          publish_dir: allure-report
