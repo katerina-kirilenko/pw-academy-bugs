@@ -1,4 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
+import * as os from "node:os";
+import { URLs } from "./src/types";
 
 /**
  * Read environment variables from file.
@@ -13,9 +15,9 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 30000,
+  timeout: 60000,
   expect: {
-    timeout: 5000,
+    timeout: 8000,
   },
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -28,14 +30,24 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ["list", { printSteps: true }],
-    ["html", { open: "never" }], // on-failure (по умолчанию)
-    ["allure-playwright"],
+    ["html"],
+    [
+      "allure-playwright",
+      {
+        environmentInfo: {
+          os_platform: os.platform(),
+          os_release: os.release(),
+          os_version: os.version(),
+          node_version: process.version,
+        },
+      },
+    ],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
-    baseURL: "https://academybugs.com/find-bugs/",
+    baseURL: URLs.base,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
     screenshot: "only-on-failure",
