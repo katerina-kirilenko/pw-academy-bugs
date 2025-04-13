@@ -1,6 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","2053","The currency should change as expected","chromium","Fri Apr 11 05:46:42 GMT 2025","passed","Fri Apr 11 05:46:44 GMT 2025","Find Bugs Challenge","academy-bugs.spec.ts","",""
-"","3913","The product image should fill the box entirely","chromium","Fri Apr 11 05:46:36 GMT 2025","passed","Fri Apr 11 05:46:40 GMT 2025","Find Bugs Challenge","academy-bugs.spec.ts","",""
-"","1588","The selected number of results should display according to the clicked buttons","chromium","Fri Apr 11 05:46:40 GMT 2025","passed","Fri Apr 11 05:46:42 GMT 2025","Find Bugs Challenge","academy-bugs.spec.ts","",""
-"","4365","Button in empty cart has correct text","chromium","Fri Apr 11 05:46:46 GMT 2025","passed","Fri Apr 11 05:46:51 GMT 2025","Find Bugs Challenge","academy-bugs.spec.ts","",""
-"","2248","User can leave comment to product","chromium","Fri Apr 11 05:46:44 GMT 2025","passed","Fri Apr 11 05:46:46 GMT 2025","Find Bugs Challenge","academy-bugs.spec.ts","",""
